@@ -6,22 +6,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-@Profile("!local-discovery")
+@Profile("local-discovery")
 @Configuration
-public class LocalHostRouteConfig {
+public class LoadBalancedRoutesConfig {
 
     @Bean
-    public RouteLocator localHostRoutes(RouteLocatorBuilder builder){
+    public RouteLocator loadBalancedRoutes(RouteLocatorBuilder builder){
         return builder.routes()
                 .route(r -> r.path("/api/v1/beer*", "/api/v1/beer/*", "/api/v1/beerUpc/*")
-                        .uri("lb://beer-service")
+                        .uri("http://localhost:8080")
                         .id("beer-service"))
                 .route(r -> r.path("/api/v1/customers/**")
-                        .uri("lb://order-service")
+                        .uri("http://localhost:8081")
                         .id("order-service"))
                 .route(r -> r.path("/api/v1/beer/*/inventory")
-                        .uri("lb://inventory-service")
+                        .uri("http://localhost:8082")
                         .id("inventory-service"))
                 .build();
     }
+
 }
